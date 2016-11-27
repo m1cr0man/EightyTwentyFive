@@ -29,7 +29,35 @@ local function refuel(quant)
 	turtle.select(old_slot)
 end
 
+local function restack()
+	local old_slot = turtle.getSelectedSlot()
+	local inv_map = {}
+	for slot = 1, 15 do
+		local detail = turtle.getItemDetail(slot) or {}
+		if detail.name then
+			local full_name = detail.name .. '#' .. tonumber(detail.metadata)
+			if inv_map[full_name] then
+				turtle.select(slot)
+				turtle.transferTo(inv_map[full_name])
+				print("Restacked " .. full_name)
+
+				-- If the stack is full, move new stuff to the current slot
+				if turtle.getItemSpace(inv_map[full_name]) == 0 then
+					inv_map[full_name] = slot
+				end
+			else
+				inv_map[full_name] = slot
+			end
+		end
+	end
+	turtle.select(old_slot)
+end
+
 local function getEmptySlot()
+
+	-- Attempt to free a slot just by moving things around
+	restack()
+
 	for slot = 1, 15 do
 		if turtle.getItemCount(slot) == 0 then
 			return slot
