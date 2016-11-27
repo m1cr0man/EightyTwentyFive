@@ -1,4 +1,3 @@
-shell.run("stateful")
 local argv = {...}
 
 -- Blocks to drop when inventory is full
@@ -13,16 +12,17 @@ local num_rings = tonumber(argv[1]) or 5
 local center_width = tonumber(argv[2]) or 4
 local gap = tonumber(argv[3]) or 2
 local torch_distance = 0
+local findings = {}
 
 local function refuel(quant)
-	for slot = 1, 16 do
+	for slot = 1, 15 do
 		turtle.select(slot)
 		if turtle.refuel(quant) then break end
 	end
 end
 
 local function getEmptySlot()
-	for slot = 1, 16 do
+	for slot = 1, 15 do
 		if turtle.getItemCount(slot) == 0 then
 			return slot
 		end
@@ -33,8 +33,8 @@ end
 local function dropBlacklist()
 	local dropped_stuff = false
 	local old_slot = turtle.getSelectedSlot()
-	for slot = 1, 16 do
-		local detail = turtle.getItemDetail(slot) or {name = ""}
+	for slot = 1, 15 do
+		local detail = turtle.getItemDetail(slot) or {}
 		for _, word in pairs(blacklist) do
 			if detail.name:find(word) then
 				turtle.select(slot)
@@ -80,8 +80,23 @@ local function checkInventory()
 	end
 end
 
+local function inspectBlocks()
+	for _, dir in pairs({"", "Up", "Down"}) do
+		local scan = (select(2, turtle["inspect" .. dir]()) or {})
+		if scan.name then
+			findings[scan.name] = (findings[scan.name] or 0) + 1
+		end
+	end
+	local file = io.open("findings.txt", "w")
+	file:write(textutils.serialize(findings))
+	file:close()
+end
+
 local function digDistance(distance)
 	for column = 1, distance do
+
+		-- Record what we're digging
+		inspectBlocks()
 
 		-- Check there is enough fuel and space
 		checkInventory()
@@ -125,9 +140,6 @@ local function main()
 	read()
 	print("Starting")
 	shockwave(num_rings, center_width)
-
-	-- Clean up stateful turtle
-	turtle.finish()
 end
 
 main()
