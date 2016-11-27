@@ -21,10 +21,12 @@ if (fs.exists("findings.txt")) then
 end
 
 local function refuel(quant)
+	local old_slot = turtle.getSelectedSlot()
 	for slot = 1, 15 do
 		turtle.select(slot)
 		if turtle.refuel(quant) then break end
 	end
+	turtle.select(old_slot)
 end
 
 local function getEmptySlot()
