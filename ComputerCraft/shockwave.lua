@@ -14,6 +14,11 @@ local gap = tonumber(argv[3]) or 2
 local start_ring = tonumber(argv[4]) or 1
 local torch_distance = 0
 local findings = {}
+if (fs.exists("findings.txt")) then
+	local file = io.open("findings.txt", "r")
+	findings = textutils.unserialize(file:read("*a"))
+	file:close()
+end
 
 local function refuel(quant)
 	for slot = 1, 15 do
