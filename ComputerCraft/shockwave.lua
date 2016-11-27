@@ -11,6 +11,7 @@ local torch_gap = 15
 local num_rings = tonumber(argv[1]) or 5
 local center_width = tonumber(argv[2]) or 4
 local gap = tonumber(argv[3]) or 2
+local start_ring = tonumber(argv[4]) or 1
 local torch_distance = 0
 local findings = {}
 
@@ -114,7 +115,7 @@ end
 
 local function shockwave(num_rings, center_width)
 
-	for ring = 1, num_rings do
+	for ring = start_ring, num_rings do
 		for side = 1, 4 do
 			print(("Ring #%d Side #%d"):format(ring, side))
 			digDistance((center_width - 1) + (gap + 1) * 2 * (ring - 1))
@@ -137,10 +138,17 @@ local function shockwave(num_rings, center_width)
 end
 
 local function main()
+	if #argv < 3 then
+		print("Insufficient arguments, proceed? [y/n]")
+		if read() ~= "y" then
+			return
+		end
+	end
 	print("Make sure torches are in slot 16 and press enter")
 	read()
 	print("Starting")
 	shockwave(num_rings, center_width)
+	print("Done!")
 end
 
 main()

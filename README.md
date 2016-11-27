@@ -32,7 +32,7 @@ outwards like a shockwave.
 Place turtle on bottom left of first square. It will turn right as it runs.
 
 ```
-shockwave <Num-Waves> <Starting-Width> <Wave-Gap>
+shockwave <Num-Waves> <Starting-Width> <Wave-Gap> [<Starting-Ring>]
 ```
 
 - `Num-Waves`: The number of squares to mine out, cascading outwards.
@@ -41,6 +41,9 @@ Default: 5
 Default: 4
 - `Wave-Gap`: The size of the gap between each wave.
 Default: 2
+- `Starting-Ring`: Optional, the ring the turtle is starting on. Used when
+expanding an existing shockwave mine
+Default: 1
 
 ### Stateful
 
