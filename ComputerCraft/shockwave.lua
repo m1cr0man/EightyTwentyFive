@@ -84,7 +84,8 @@ local function inspectBlocks()
 	for _, dir in pairs({"", "Up", "Down"}) do
 		local scan = (select(2, turtle["inspect" .. dir]()) or {})
 		if scan.name then
-			findings[scan.name] = (findings[scan.name] or 0) + 1
+			local full_name = scan.name .. '#' .. tonumber(scan.metadata)
+			findings[full_name] = (findings[full_name] or 0) + 1
 		end
 	end
 	local file = io.open("findings.txt", "w")
