@@ -9,6 +9,7 @@ Mostly console based.
 1. [ComputerCraft Software](#computercraft-software)
 	- [Stateful](#stateful)
 	- [Shockwave](#shockwave)
+	- [Keyboard Turtle Control](#keyboard-turtle-control)
 
 
 ## ComputerCraft Software
@@ -60,3 +61,15 @@ the rednet library.
 
 Run the program either in your scripts through `shell.run` or manually at the
 command prompt. This will wrap the turtle API globally.
+
+### Keyboard Turtle Control
+
+Allows the user to move the turtle using their keyboard whilst in the console.
+
+The controls as well as the blocks detected above, below and infront of the
+turtle are printed on the screen.
+
+#### Usage
+
+Run the program normally on a turtle. The on-screen controls should guide you
+from there.
