@@ -35,7 +35,7 @@ local function restack()
 	for slot = 1, 15 do
 		local detail = turtle.getItemDetail(slot) or {}
 		if detail.name then
-			local full_name = detail.name .. '#' .. tonumber(detail.metadata)
+			local full_name = detail.name .. '#' .. detail.damage or 0
 			if inv_map[full_name] then
 				turtle.select(slot)
 				turtle.transferTo(inv_map[full_name])
