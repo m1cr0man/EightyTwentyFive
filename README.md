@@ -54,14 +54,14 @@ shockwave <Num-Waves> <Starting-Width> <Wave-Gap> [<Starting-Ring>]
 ```
 
 - `Num-Waves`: The number of squares to mine out, cascading outwards.
-Default: 5
+	- Default: 5
 - `Starting-Width`: The width of the first square.
-Default: 4
+	- Default: 4
 - `Wave-Gap`: The size of the gap between each wave.
-Default: 2
+	- Default: 2
 - `Starting-Ring`: Optional, the ring the turtle is starting on. Used when
 expanding an existing shockwave mine
-Default: 1
+	- Default: 1
 
 ### Areacut
 
@@ -80,11 +80,11 @@ areacut <Front> <Left/Right> <Down>
 ```
 
 - `Front`: The distance to dig infront of the turtle
-Minimum: 2
+	- Minimum: 2
 - `Left/Right`: The distance to dig left of the turtle. Negative for right
-Minimum: +/-2
+	- Minimum: +/-2
 - `Down`: The distance to dig down
-Minimum: 2
+	- Minimum: 2
 
 **NOTE:** All measurements include the block the turtle is on.
 
