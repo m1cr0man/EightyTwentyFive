@@ -139,7 +139,7 @@ local function digDistance(distance)
 		checkInventory()
 
 		repeat until not turtle.digUp()
-		repeat until not turtle.digDown()
+		turtle.digDown()
 
 		-- Place a torch if necessary
 		placeTorch()
