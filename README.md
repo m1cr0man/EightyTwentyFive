@@ -9,6 +9,7 @@ Mostly console based.
 1. [ComputerCraft Software](#computercraft-software)
 	- [Stateful](#stateful)
 	- [Shockwave](#shockwave)
+	- [Areacut](#areacut)
 	- [Keyboard Turtle Control](#keyboard-turtle-control)
 
 
@@ -17,6 +18,22 @@ Mostly console based.
 These are Lua programs wrote specifically for use with the Minecraft mod
 [ComputerCraft](http://www.computercraft.info), which adds computers and
 "turtle" robots to the game.
+
+### Stateful
+
+Allows turtle applications to resume where they left off by wrapping the turtle
+library and logging the return value of each function call, in order, to disk.
+
+When the program is resumed the turtle commands will be "fast forwarded" to the
+point where the program closed by sending these same return values again.
+
+This works for most turtle programs but does not cover user interaction or
+the rednet library.
+
+#### Usage
+
+Run the program either in your scripts through `shell.run` or manually at the
+command prompt. This will wrap the turtle API globally.
 
 ### Shockwave
 
@@ -46,21 +63,30 @@ Default: 2
 expanding an existing shockwave mine
 Default: 1
 
-### Stateful
+### Areacut
 
-Allows turtle applications to resume where they left off by wrapping the turtle
-library and logging the return value of each function call, in order, to disk.
+Mines out a square area.
 
-When the program is resumed the turtle commands will be "fast forwarded" to the
-point where the program closed by sending these same return values again.
-
-This works for most turtle programs but does not cover user interaction or
-the rednet library.
+- Handles liquids and falling blocks properly
+- Calculates fuel cost before starting and prompts for fuel if necessary
+- Uses [Stateful](#stateful) - reboot friendly
 
 #### Usage
 
-Run the program either in your scripts through `shell.run` or manually at the
-command prompt. This will wrap the turtle API globally.
+Place turtle on top left or top right of first square, facing into the area.
+
+```
+areacut <Front> <Left/Right> <Down>
+```
+
+- `Front`: The distance to dig infront of the turtle
+Minimum: 2
+- `Left/Right`: The distance to dig left of the turtle. Negative for right
+Minimum: +/-2
+- `Down`: The distance to dig down
+Minimum: 2
+
+**NOTE:** All measurements include the block the turtle is on.
 
 ### Keyboard Turtle Control
 
