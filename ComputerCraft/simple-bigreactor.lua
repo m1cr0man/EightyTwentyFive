@@ -3,69 +3,88 @@
 local fuel_min = 97.3
 local buffer_min = 3000
 local buffer_max = 7000
+local core_temp_max = 1500
 local update_interval = 2
+local rednet_side = "right"
+local rednet_protocol = "big-reactor"
 
 local reactor = peripheral.wrap("bottom")
 
 local fuel_max = reactor.getFuelAmountMax()
 
-local tick_funcs = {}
+local readings = {
+	name = os.getComputerLabel()
+}
+
+local function broadcastStatus()
+	rednet.open(rednet_side)
+	rednet.broadcast(
+		readings,
+		rednet_protocol
+	)
+	rednet.close(rednet_side)
+end
+
+local function updateReadings()
+	readings.is_on = reactor.getActive()
+	readings.steam_buffered = reactor.getHotFluidAmount()
+	readings.fuel_percent = (reactor.getFuelAmount() * 100) / fuel_max
+	readings.core_temp = reactor.getFuelTemperature()
+end
 
 -- Raises/lowers rods to match steam target
-function tick_funcs.controlActivity()
-	while true do
-		local evt, p1, p2 = coroutine.yield()
+local function controlActivity()
+	if readings.is_on then
 
-		local is_on = reactor.getActive()
-		local steam_buffered = reactor.getHotFluidAmount()
-		local fuel_percent = (reactor.getFuelAmount() * 100) / fuel_max
+		-- Shutdown if out of fuel
+		if readings.fuel_percent <= fuel_min then
+			print("Fuel below minimum, shutting down")
+			reactor.setActive(false)
 
-		if is_on then
+		-- Shutdown if overheating
+		elseif readings.core_temp > core_temp_max then
+			print("Temperature above maximum, shutting down")
+			reactor.setActive(false)
 
-			-- Shutdown if out of fuel
-			if fuel_percent <= fuel_min then
-				print("Fuel below minimum, shutting down")
-				reactor.setActive(false)
-
-			-- Shutdown if buffer is above max
-			-- elseif steam_buffered >= buffer_max then
-			-- 	print("Steam buffer above maximum, shutting down")
-			-- 	reactor.setActive(false)
-			end
-
-		elseif
-
-		-- Start if buffer is below min
-			fuel_percent >= fuel_min and
-
-		-- and fuel is sufficient
-			steam_buffered < buffer_min
-		then
-			print("Steam buffer and fuel at thresholds, starting up")
-			reactor.setActive(true)
+		-- Shutdown if buffer is above max
+		-- elseif steam_buffered >= buffer_max then
+		-- 	print("Steam buffer above maximum, shutting down")
+		-- 	reactor.setActive(false)
+		-- TODO shutdown if overheated
+		-- TODO shutdown if power level is reached
 		end
+
+	elseif
+
+	-- Start if fuel is sufficient
+		readings.fuel_percent >= fuel_min and
+
+	-- and buffer is below min
+		readings.steam_buffered < buffer_min
+
+	-- We don't need a case to cover the temperature because if
+	-- the reactor overheats the steam buffer is guaranteed to be full
+	then
+		print("Targets met, starting up")
+		reactor.setActive(true)
 	end
 end
 
 local function main()
 
-	-- Initialize all the coroutines
-	local tick_func_coroutines = {}
-	for _, func in pairs(tick_funcs) do
-		table.insert(tick_func_coroutines, coroutine.create(func))
-	end
+	-- Get initial readings
+	updateReadings()
 
 	-- Main loop
 	local update_timer = os.startTimer(update_interval)
 	while true do
-		local evt, p1, p2, p3, p4 = os.pullEventRaw()
+		local evt, p1, p2, p3, p4 = os.pullEvent()
 
-		for _, func in pairs(tick_func_coroutines) do
-			coroutine.resume(func, evt, p1, p2, p3, p4)
-		end
-
-		-- Restart timer
-		if evt == "timer" then
+		-- Restart timer, run functions
+		if evt == "timer" and p1 == update_timer then
+			controlActivity()
+			updateReadings()
+			broadcastStatus()
 			update_timer = os.startTimer(update_interval)
 
 		-- Kill switch (end key)
