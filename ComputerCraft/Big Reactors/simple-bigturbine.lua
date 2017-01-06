@@ -6,7 +6,7 @@ local rpm_max = 1820
 local power_max = 90
 local update_interval = 2
 local rednet_side = "left"
-local rednet_protocol = "big-turbine"
+local rednet_protocol = "statusTurbine"
 
 local turbine = peripheral.wrap("back")
 

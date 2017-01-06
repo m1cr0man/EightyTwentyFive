@@ -2,11 +2,10 @@
 
 local fuel_min = 97.3
 local buffer_min = 3000
-local buffer_max = 7000
 local core_temp_max = 1500
 local update_interval = 2
 local rednet_side = "right"
-local rednet_protocol = "big-reactor"
+local rednet_protocol = "statusReactor"
 
 local reactor = peripheral.wrap("bottom")
 
@@ -45,13 +44,6 @@ local function controlActivity()
 		elseif readings.core_temp > core_temp_max then
 			print("Temperature above maximum, shutting down")
 			reactor.setActive(false)
-
-		-- Shutdown if buffer is above max
-		-- elseif steam_buffered >= buffer_max then
-		-- 	print("Steam buffer above maximum, shutting down")
-		-- 	reactor.setActive(false)
-		-- TODO shutdown if overheated
-		-- TODO shutdown if power level is reached
 		end
 
 	elseif

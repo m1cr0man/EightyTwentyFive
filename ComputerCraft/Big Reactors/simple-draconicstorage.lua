@@ -1,7 +1,7 @@
 -- 2016 m1cr0man
 local update_interval = 2
 local rednet_side = "bottom"
-local rednet_protocol = "big-storage"
+local rednet_protocol = "statusStorage"
 
 local storage = peripheral.wrap("top")
 
