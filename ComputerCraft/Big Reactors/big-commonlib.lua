@@ -1,27 +1,34 @@
-local function forkClass(parent, new_obj)
-	new_obj = new_obj or {}
-	setmetatable(new_obj, parent)
-	parent.__index = parent
-	return new_obj
+local classMetatable = {
+	__call = function(self, ...)
+		return self.new(...)
+	end
+}
+
+local function class(tbl)
+	tbl.__index = tbl
+	return setmetatable(tbl or {}, classMetatable)
 end
 
 -- Stack class
-local Stack = {max_size = math.maxinteger}
+local Stack = class({max_size = math.maxinteger})
 
-function Stack:new(max_size)
-	local new_obj = forkClass(self)
-	self.storage = {}
+-- Stores the data in self
+-- Saves space, means that #Stack works in all lua versions
+-- That said it runs in O(logn) and my :length method is O(1)
+function Stack.new(max_size)
+	local self = setmetatable({}, Stack)
 	self.size = 0
 
+	-- Allocate all the mem for the stack now
+	-- if max_size was defined
 	if max_size then
 		self.max_size = max_size
-
 		for i = 1, max_size do
-			self.storage[i] = nil
+			self[i] = nil
 		end
 	end
 
-	return new_obj
+	return self
 end
 
 function Stack:push(value)
@@ -31,19 +38,19 @@ function Stack:push(value)
 
 		-- Rebuild the stack, shifting the keys up one and popping the first item off
 		for i = 2, self.size do
-			self.storage[i - 1] = self.storage[i]
+			self[i - 1] = self[i]
 		end
 		self.size = self.size - 1
 	end
 
 	self.size = self.size + 1
-	self.storage[self.size] = value
+	self[self.size] = value
 end
 
 function Stack:pop()
 	if self.size == 0 then return end
-	local value = self.storage[self.size]
-	sself.storage[self.size] = nil
+	local value = self[self.size]
+	self[self.size] = nil
 	self.size = self.size - 1
 	return value
 end
@@ -53,7 +60,7 @@ function Stack:isEmpty()
 end
 
 function Stack:peek()
-	return self.storage[self.size]
+	return self[self.size]
 end
 
 function Stack:length()
@@ -61,14 +68,14 @@ function Stack:length()
 end
 
 -- Queue class
-local Queue = {max_size = math.maxinteger}
+local Queue = class({max_size = math.maxinteger})
 
-function Queue:new(max_size)
-	local new_obj = forkClass(self)
+function Queue.new(max_size)
+	local self = setmetatable({}, Queue)
 	self.max_size = max_size or self.max_size
-	self.enq_stack = Stack:new(max_size)
-	self.deq_stack = Stack:new(max_size)
-	return new_obj
+	self.enq_stack = Stack(max_size)
+	self.deq_stack = Stack(max_size)
+	return self
 end
 
 -- Interal use only - transfers data from enq to deq stack
@@ -107,6 +114,10 @@ function Queue:pop()
 	end
 end
 
+function Queue:isEmpty()
+	return self.enq_stack:isEmpty() and self.deq_stack:isEmpty()
+end
+
 -- O(n) if the deq_stack is empty unfortunately
 function Queue:peek()
 	self:_swapStacks()
@@ -118,7 +129,40 @@ function Queue:length()
 end
 
 local function test()
-	
+	local test_stack = Stack(6)
+	local test_stack_2 = Stack()
+	for i = 1, 10 do
+		test_stack:push(i)
+		test_stack_2:push(i)
+	end
+
+	assert(test_stack:length() == 6, "Stack 1 has wrong length")
+	assert(test_stack:length() == #test_stack, "Stack 1 length operators don't match")
+	assert(test_stack_2:length() == 10, "Stack 2 has wrong length")
+	assert(test_stack_2:length() == #test_stack_2, "Stack 2 length operators don't match")
+	print(#test_stack, test_stack:length(), #test_stack_2, test_stack_2:length())
+	for i = 1, 10 do
+		print("1:", test_stack:pop(), "2:", test_stack_2:pop())
+	end
+	assert(test_stack:length() == 0, "Stack 1 not empty")
+	assert(test_stack_2:length() == 0, "Stack 2 not empty")
+	print("All stack tests passed")
+
+	local test_queue = Queue(6)
+	local test_queue_2 = Queue()
+	for i = 1, 10 do
+		test_queue:push(i)
+		test_queue_2:push(i)
+	end
+	assert(test_queue:length() == 6, "Queue 1 has wrong length")
+	assert(test_queue_2:length() == 10, "Queue 2 has wrong length")
+	print(test_queue:length(), test_queue_2:length())
+	for i = 1, 10 do
+		print("1:", test_queue:pop(), "2:", test_queue_2:pop())
+	end
+	assert(test_queue:length() == 0, "Queue 1 not empty")
+	assert(test_queue_2:length() == 0, "Queue 2 not empty")
+	print("All queue tests passed")
 end
 
-test()
+-- test()
