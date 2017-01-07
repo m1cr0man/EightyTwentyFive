@@ -4,13 +4,13 @@ local classMetatable = {
 	end
 }
 
-local function class(tbl)
+function class(tbl)
 	tbl.__index = tbl
 	return setmetatable(tbl or {}, classMetatable)
 end
 
 -- Stack class
-local Stack = class({max_size = math.maxinteger})
+Stack = class({max_size = math.maxinteger})
 
 -- Stores the data in self
 -- Saves space, means that #Stack works in all lua versions
@@ -68,7 +68,7 @@ function Stack:length()
 end
 
 -- Queue class
-local Queue = class({max_size = math.maxinteger})
+Queue = class({max_size = math.maxinteger})
 
 function Queue.new(max_size)
 	local self = setmetatable({}, Queue)

@@ -28,6 +28,7 @@ local function updateReadings()
 	readings.is_on = reactor.getActive()
 	readings.steam_buffered = reactor.getHotFluidAmount()
 	readings.fuel_percent = (reactor.getFuelAmount() * 100) / fuel_max
+	readings.fuel_burn_rate = reactor.getFuelConsumedLastTick()
 	readings.core_temp = reactor.getFuelTemperature()
 end
 
