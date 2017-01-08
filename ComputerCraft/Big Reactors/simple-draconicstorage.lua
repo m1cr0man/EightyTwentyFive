@@ -1,4 +1,4 @@
--- 2016 m1cr0man
+-- 2017 m1cr0man
 local update_interval = 2
 local rednet_side = "bottom"
 local rednet_protocol = "statusStorage"

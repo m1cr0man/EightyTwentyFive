@@ -1,3 +1,4 @@
+-- 2017 m1cr0man
 local classMetatable = {
 	__call = function(self, ...)
 		return self.new(...)
@@ -5,8 +6,9 @@ local classMetatable = {
 }
 
 function class(tbl)
-	tbl.__index = tbl
-	return setmetatable(tbl or {}, classMetatable)
+	new_class = setmetatable(tbl or {}, classMetatable)
+	new_class.__index = new_class
+	return new_class
 end
 
 -- Stack class
@@ -126,6 +128,16 @@ end
 
 function Queue:length()
 	return self.enq_stack:length() + self.deq_stack:length()
+end
+
+-- Simple function to get a timestamp
+function timestamp()
+	return os.time() + (os.day() * 24)
+end
+
+-- Returns a string representation of an int
+function prettyInt(value, accuracy)
+
 end
 
 local function test()

@@ -1,4 +1,4 @@
--- 2016 m1cr0man
+-- 2017 m1cr0man
 
 local steam_required = 1160
 local rpm_min = 1780
@@ -28,6 +28,7 @@ local function updateReadings()
 	readings.steam_on = turbine.getFluidFlowRateMax() > 0
 	readings.steam_buffered = turbine.getInputAmount()
 	readings.power_buffered_percent = turbine.getEnergyStored() / 10000
+	readings.power_production = turbine.getEnergyProducedLastTick()
 	readings.rpm = turbine.getRotorSpeed()
 end
 
