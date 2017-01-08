@@ -8,7 +8,7 @@ local classMetatable = {
 -- Returns a string representation of an int
 local sizes, kilo = {'K', 'M', 'B', 'T'}, 1000
 function prettyInt(value, decimals, show_sign)
-	local zeroes = math.floor(math.log(value) / math.log(kilo))
+	local zeroes = math.floor(math.log(math.abs(value)) / math.log(kilo))
 	local out_string = ("%%%s.%df%%s"):format(show_sign and "+" or "", decimals or 1)
 
 	-- In computercraft, %.0f prints 1 decimal place. We have to use %d manually
@@ -196,7 +196,7 @@ local function test()
 	print("All queue tests passed")
 
 	assert(prettyInt(999, 0) == "999", "prettyInt wrong for value 999")
-	assert(prettyInt(-990000, 1) == "990.0K", "prettyInt wrong for value 990000")
+	assert(prettyInt(-990000, 1) == "-990.0K", "prettyInt wrong for value 990000")
 	print("All prettyInt tests passed")
 
 	assert(prettyDay(23) == "23h", "prettyDay wrong for value 23")
