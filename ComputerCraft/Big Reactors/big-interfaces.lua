@@ -50,8 +50,8 @@ function Reactor:getSummary()
 	return {
 		self.is_on,
 		self.name:gsub("Reactor", "R"),
-		self.uptime,
-		self.steam_delta
+		commonlib.prettyDay(self.uptime),
+		commonlib.prettyInt(self.steam_delta, 0, true)
 	}
 end
 
@@ -110,8 +110,8 @@ function Turbine:getSummary()
 	return {
 		self.coil_on,
 		self.name:gsub("Turbine", "T"),
-		self.uptime,
-		self.power_production
+		commonlib.prettyDay(self.uptime),
+		commonlib.prettyInt(self.power_production, 0)
 	}
 end
 
@@ -168,8 +168,8 @@ function Storage:getSummary()
 	return {
 		self.energy > 0,
 		self.name:gsub("Storage", "S"),
-		self.energy,
-		self.energy_delta
+		commonlib.prettyInt(self.energy, 0),
+		commonlib.prettyInt(self.energy_delta, 0, true)
 	}
 end
 

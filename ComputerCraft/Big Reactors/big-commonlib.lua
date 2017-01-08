@@ -5,6 +5,35 @@ local classMetatable = {
 	end
 }
 
+-- Returns a string representation of an int
+local sizes, kilo = {'K', 'M', 'B', 'T'}, 1000
+function prettyInt(value, decimals, show_sign)
+	local zeroes = math.floor(math.log(value) / math.log(kilo))
+	local out_string = ("%%%s.%df%%s"):format(show_sign and "+" or "", decimals or 1)
+
+	-- In computercraft, %.0f prints 1 decimal place. We have to use %d manually
+	if decimals == 0 then
+		out_string = ("%%%sd%%s"):format(show_sign and "+" or "")
+	end
+	return out_string:format(value / math.pow(kilo, zeroes), sizes[zeroes] or '')
+end
+
+-- Returns a nicer representation of a timestamp
+function prettyDay(stamp)
+	local stamp = math.floor(stamp)
+	local days = math.floor(stamp / 24)
+	if days > 0 then
+		return ("%dd"):format(days)
+	else
+		return ("%dh"):format(stamp)
+	end
+end
+
+-- Simple function to get a timestamp
+function timestamp()
+	return os.time() + (os.day() * 24)
+end
+
 function class(tbl)
 	new_class = setmetatable(tbl or {}, classMetatable)
 	new_class.__index = new_class
@@ -130,16 +159,6 @@ function Queue:length()
 	return self.enq_stack:length() + self.deq_stack:length()
 end
 
--- Simple function to get a timestamp
-function timestamp()
-	return os.time() + (os.day() * 24)
-end
-
--- Returns a string representation of an int
-function prettyInt(value, accuracy)
-
-end
-
 local function test()
 	local test_stack = Stack(6)
 	local test_stack_2 = Stack()
@@ -175,6 +194,14 @@ local function test()
 	assert(test_queue:length() == 0, "Queue 1 not empty")
 	assert(test_queue_2:length() == 0, "Queue 2 not empty")
 	print("All queue tests passed")
+
+	assert(prettyInt(999, 0) == "999", "prettyInt wrong for value 999")
+	assert(prettyInt(-990000, 1) == "990.0K", "prettyInt wrong for value 990000")
+	print("All prettyInt tests passed")
+
+	assert(prettyDay(23) == "23h", "prettyDay wrong for value 23")
+	assert(prettyDay(85) == "3d", "prettyDay wrong for value 990000")
+	print("All prettyDay tests passed")
 end
 
--- test()
+test()
