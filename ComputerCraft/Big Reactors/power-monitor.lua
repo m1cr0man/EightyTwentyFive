@@ -14,10 +14,16 @@ local supported_protocols = {
 }
 -- END configurable options
 
+-- Setup windows on the monitor
 local monitor = peripheral.wrap(monitor_side)
 local monitor_szx, monitor_szy = monitor.getSize()
-local boxes_per_row = math.floor(monitor_szx / 12)
-print(monitor_szx, monitor_szy)
+local monitor_statuses = window.create(monitor, monitor_szx / 2, monitor_szy, 1, 1, true)
+local monitor_log = window.create(monitor, monitor_szx / 2, monitor_szy, 1 + (monitor_szx / 2), 1, true)
+local boxes_per_row = math.floor(monitor_szx / 6)
+
+-- Clear the monitor log now, and never again
+monitor_log.setBackgroundColour(colours.black)
+monitor_log.clear()
 
 local devices = setmetatable({}, {
 	__index = function(self, name)
@@ -26,13 +32,15 @@ local devices = setmetatable({}, {
 	end
 })
 
+local events = commonlib.Queue(log_max_length)
+
 local function printSummaryBox(summary, index)
 
 	-- Align the cursor up
 	local x_pos = 1 + 6 * ((index - 1) % boxes_per_row)
 	local y_pos = 1 + 4 * math.floor((index - 1) / boxes_per_row)
-	monitor.setCursorPos(x_pos, y_pos)
-	monitor.setBackgroundColour(colours[summary[1] and "green" or "red"])
+	monitor_statuses.setCursorPos(x_pos, y_pos)
+	monitor_statuses.setBackgroundColour(colours[summary[1] and "green" or "red"])
 	table.remove(summary, 1)
 
 	-- Pad the values in summary
@@ -46,19 +54,44 @@ local function printSummaryBox(summary, index)
 		for _ = 1, 5 - #data do
 			data = data .. " "
 		end
-		monitor.write(data)
-		monitor.setCursorPos(x_pos, y_pos + i)
+		monitor_statuses.write(data)
+		monitor_statuses.setCursorPos(x_pos, y_pos + i)
 	end
 end
 
-local function updateDisplay()
-	monitor.setBackgroundColour(colours.black)
-	monitor.clear()
+local function printEventLog()
+	term.redirect(monitor_log)
+	while not events:isEmpty() do
+		print(events:pop())
+	end
+	term.restore()
+end
+
+local function printStatusLog()
+	monitor_statuses.setBackgroundColour(colours.black)
+	monitor_statuses.clear()
 	i = 1
 	for _, device in pairs(devices) do
 		printSummaryBox(device:getSummary(), i)
 		i = i + 1
 	end
+end
+
+local function updateDisplay()
+	printStatusLog()
+	printEventLog()
+end
+
+local function updateEvents(name, log_data)
+	if not log_data.event then return end
+
+	local log_msg = "[%s:%s] %s"
+
+	events:push(log_msg:format(
+		name,
+		commonlib.prettyDay(p2.timestamp),
+		log_data.event
+	))
 end
 
 local function main()
@@ -86,7 +119,7 @@ local function main()
 			print(name)
 			p2.timestamp = commonlib.timestamp()
 			p2.name = nil
-			devices[name]:update(p2)
+			updateEvents(name, devices[name]:update(p2))
 		end
 	end
 end

@@ -15,12 +15,22 @@ local function broadcastStatus()
 		readings,
 		rednet_protocol
 	)
+	readings.event = nil
 	rednet.close(rednet_side)
+end
+
+local function logEvent(event)
+	readings.event = event
+	print(event)
 end
 
 local function updateReadings()
 	readings.energy = storage.getEnergyStored()
 	readings.energy_max = storage.getMaxEnergyStored()
+
+	if readings.energy == readings.energy_max then
+		logEvent("Maximum energy reached")
+	end
 end
 
 local function main()

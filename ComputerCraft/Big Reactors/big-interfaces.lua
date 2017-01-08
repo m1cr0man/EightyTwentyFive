@@ -34,11 +34,6 @@ function Reactor:update(log_data)
 		self.temp_delta = log_data.core_temp - self.core_temp
 	end
 
-	-- Update the current status
-	for k, v in pairs(log_data) do
-		self[k] = v
-	end
-
 	-- Store the log
 	self.logs:push(log_data)
 end

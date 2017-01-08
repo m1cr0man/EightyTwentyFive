@@ -1,6 +1,6 @@
 -- 2017 m1cr0man
 
-local steam_required = 1160
+local steam_required = 1736
 local rpm_min = 1780
 local rpm_max = 1820
 local power_max = 90
@@ -20,7 +20,13 @@ local function broadcastStatus()
 		readings,
 		rednet_protocol
 	)
+	readings.event = nil
 	rednet.close(rednet_side)
+end
+
+local function logEvent(event)
+	readings.event = event
+	print(event)
 end
 
 local function updateReadings()
@@ -42,18 +48,18 @@ local function controlRPM()
 
 		-- Disable coils if buffer is empty
 		if readings.steam_buffered == 0 then
-			print("Steam depleted, disabling coil")
+			logEvent("Steam depleted, disabling coil")
 			turbine.setInductorEngaged(false)
 
 		-- Disable coils if RPM is too low
 		-- Allows them to spool back up
 		elseif readings.rpm < rpm_min then
-			print("RPM below minimum, disabling coil")
+			logEvent("RPM below minimum, disabling coil")
 			turbine.setInductorEngaged(false)
 
 		-- Disable coil if power full
 		elseif readings.power_buffered_percent >= power_max then
-			print("Power above maximum, disabling coil")
+			logEvent("Power above maximum, disabling coil")
 			turbine.setInductorEngaged(false)
 		end
 
@@ -69,7 +75,7 @@ local function controlRPM()
 		-- and power isn't maxed
 		readings.power_buffered_percent < power_max
 	then
-		print("Targets met, enabling coil")
+		logEvent("Targets met, enabling coil")
 		turbine.setInductorEngaged(true)
 	end
 
@@ -78,12 +84,12 @@ local function controlRPM()
 
 		-- Disable steam if power full
 		if readings.power_buffered_percent > power_max then
-			print("Max power reached, disabling steam")
+			logEvent("Max power reached, disabling steam")
 			turbine.setFluidFlowRateMax(0)
 
 		-- Disable steam if overloaded
 		elseif readings.rpm > rpm_max then
-			print("Turbine overloaded, disabling steam")
+			logEvent("Turbine overloaded, disabling steam")
 			turbine.setFluidFlowRateMax(0)
 
 		end

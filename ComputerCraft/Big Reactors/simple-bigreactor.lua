@@ -21,7 +21,13 @@ local function broadcastStatus()
 		readings,
 		rednet_protocol
 	)
+	readings.event = nil
 	rednet.close(rednet_side)
+end
+
+local function logEvent(event)
+	readings.event = event
+	print(event)
 end
 
 local function updateReadings()
@@ -38,12 +44,12 @@ local function controlActivity()
 
 		-- Shutdown if out of fuel
 		if readings.fuel_percent <= fuel_min then
-			print("Fuel below minimum, shutting down")
+			logEvent("Fuel below minimum, shutting down")
 			reactor.setActive(false)
 
 		-- Shutdown if overheating
 		elseif readings.core_temp > core_temp_max then
-			print("Temperature above maximum, shutting down")
+			logEvent("Temperature above maximum, shutting down")
 			reactor.setActive(false)
 		end
 
@@ -58,7 +64,7 @@ local function controlActivity()
 	-- We don't need a case to cover the temperature because if
 	-- the reactor overheats the steam buffer is guaranteed to be full
 	then
-		print("Targets met, starting up")
+		logEvent("Targets met, starting up")
 		reactor.setActive(true)
 	end
 end
