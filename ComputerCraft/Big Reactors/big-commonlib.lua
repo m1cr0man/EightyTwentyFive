@@ -6,6 +6,7 @@ local classMetatable = {
 }
 
 -- Returns a string representation of an int
+-- Adds the letter to represent each power of 1000
 local sizes, kilo = {'K', 'M', 'B', 'T'}, 1000
 function prettyInt(value, decimals, show_sign)
 	local zeroes = math.floor(math.log(math.abs(value)) / math.log(kilo))
@@ -16,6 +17,25 @@ function prettyInt(value, decimals, show_sign)
 		out_string = ("%%%sd%%s"):format(show_sign and "+" or "")
 	end
 	return out_string:format(value / math.pow(kilo, zeroes), sizes[zeroes] or '')
+end
+
+-- Returns a string representation of an int/float
+-- Adds commas every 3 vals
+local function commaInt(value)
+	local str_value = tostring(value)
+	local before, digits, after = str_value:match('^([^%d]*)(%d+)(%.?.*)$')
+	local output = ''
+	local remaining_digits = #digits
+	for i = 1, #digits do
+		local char = digits:sub(i, i)
+		if (remaining_digits) % 3 == 0 and (i - 1) % #digits ~= 0 then
+			output = output .. ','
+		end
+		remaining_digits = remaining_digits - 1
+		output = output .. char
+	end
+	
+	return before .. output .. after
 end
 
 -- Returns a nicer representation of a timestamp
@@ -202,6 +222,14 @@ local function test()
 	assert(prettyDay(23) == "23h", "prettyDay wrong for value 23")
 	assert(prettyDay(85) == "3d", "prettyDay wrong for value 990000")
 	print("All prettyDay tests passed")
+
+	assert(commaInt(123456789) == "123,456,789", "commaInt wrong for value 123456789")
+	assert(commaInt(1234.0123) == "1,234.0123", "commaInt wrong for value 1234")
+	assert(commaInt(-1234) == "-1,234", "commaInt wrong for value -1234")
+	assert(commaInt(123) == "123", "commaInt wrong for value 123")
+	print("All commaInt tests passed")
+
 end
 
-test()
+-- If not running in computercraft...
+if not fs then test() end
