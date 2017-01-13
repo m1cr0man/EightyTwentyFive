@@ -17,13 +17,13 @@ local supported_protocols = {
 -- Setup windows on the monitor
 local monitor = peripheral.wrap(monitor_side)
 local monitor_szx, monitor_szy = monitor.getSize()
-local monitor_statuses = window.create(monitor, monitor_szx / 2, monitor_szy, 1, 1, true)
-local monitor_log = window.create(monitor, monitor_szx / 2, monitor_szy, 1 + (monitor_szx / 2), 1, true)
-local boxes_per_row = math.floor(monitor_szx / 6)
+local monitor_statuses = window.create(monitor, 1, 1, math.floor(monitor_szx / 2), monitor_szy, true)
+local monitor_log = window.create(monitor, 1 + math.floor(monitor_szx / 2), 1, math.floor(monitor_szx / 2), monitor_szy, true)
+local boxes_per_row = math.floor(monitor_szx / 12)
 
--- Clear the monitor log now, and never again
-monitor_log.setBackgroundColour(colours.black)
-monitor_log.clear()
+-- Clear the whole monitor now, and never again
+monitor.setBackgroundColour(colours.black)
+monitor.clear()
 
 local devices = setmetatable({}, {
 	__index = function(self, name)
@@ -60,11 +60,12 @@ local function printSummaryBox(summary, index)
 end
 
 local function printEventLog()
+	local old_term = term.current()
 	term.redirect(monitor_log)
 	while not events:isEmpty() do
 		print(events:pop())
 	end
-	term.restore()
+	term.redirect(old_term)
 end
 
 local function printStatusLog()
@@ -89,7 +90,7 @@ local function updateEvents(name, log_data)
 
 	events:push(log_msg:format(
 		name,
-		commonlib.prettyDay(p2.timestamp),
+		commonlib.prettyDay(log_data.timestamp),
 		log_data.event
 	))
 end
@@ -119,7 +120,8 @@ local function main()
 			print(name)
 			p2.timestamp = commonlib.timestamp()
 			p2.name = nil
-			updateEvents(name, devices[name]:update(p2))
+			devices[name]:update(p2)
+			updateEvents(name, p2)
 		end
 	end
 end
