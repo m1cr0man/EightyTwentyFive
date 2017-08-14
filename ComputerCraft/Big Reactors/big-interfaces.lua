@@ -56,7 +56,14 @@ function Reactor:getSummary()
 end
 
 function Reactor:getPage()
-
+	-- Things we need...
+	-- Animation/ascii art
+	-- All the stats
+	-- Log
+	print("Uptime: ", commonlib.prettyDay(self.uptime))
+	print(("Steam (mb): %s +- %.1f"):format(commaInt(self.steam_buffered, self.steam_delta)))
+	print(("Fuel (%mb): %s +- %.1f"):format(commaInt(self.fuel_percent, self.fuel_delta)))
+	print(("Temp (deg): %.1f +- %.1f"):format(self.core_temp, self.temp_delta))
 end
 
 -- Turbine class

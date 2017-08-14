@@ -50,3 +50,34 @@ local function saveSettings(path, tbl)
 	file:write(textutils.serialize(tbl))
 	file:close()
 end
+
+	-- Loggable events...
+	-- reactor shutdown
+	-- reactor restarted
+	-- Steam is 0 (out of fuel)
+	if log_data.steam == 0 and self.steam ~= 0 then
+		table.insert(events, "Out of steam")
+	end
+
+	-- Reactor overheated
+	if
+		self.steam_delta == 0 and
+		log_data.core_temp > self.core_temp and
+		not log_data.is_on
+	then
+		table.insert(events, ("Overheated! %d oC"):format(log_data.core_temp))
+	end
+
+	-- Reactor shutdown
+	if self.is_on and not log_data.is_on then
+		table.insert(events, ("Shutdown with %.1f%% fuel"):format(log_data.fuel_percent))
+
+	-- Reactor restarted
+	elseif log_data.is_on and not self.is_on then
+		table.insert(events, "Restarted")
+	end
+
+	-- Update the current status
+	for k, v in pairs(log_data) do
+		self[k] = v
+	end
