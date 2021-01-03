@@ -6,5 +6,8 @@
       "Microsoft.Hosting.Lifetime": "Information"
     }
   },
+  "ConnectionStrings": {
+    "DefaultContext": "Host=192.168.137.2;Database=pathfinder;Username=pathfinder;Password=[ur]l3H4v3n;LogParameters=true"
+  },
   "AllowedHosts": "*"
 }

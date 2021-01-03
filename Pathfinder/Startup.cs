@@ -20,8 +20,10 @@ namespace Pathfinder
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<MeshNodeContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("MeshNodeContext")));
+            services.AddDbContext<MeshNodeContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("DefaultContext"), o => o.UseNetTopologySuite()));
             services.AddControllers();
+
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -30,6 +32,11 @@ namespace Pathfinder
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Pathfinder V1");
+                });
             }
 
             app.UseHttpsRedirection();
