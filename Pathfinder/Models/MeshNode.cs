@@ -18,6 +18,7 @@ namespace Pathfinder.Models
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.HasPostgresExtension("postgis");
+            builder.Entity<MeshNode>().HasKey(x => x.Id);
 
             base.OnModelCreating(builder);
         }
@@ -25,8 +26,9 @@ namespace Pathfinder.Models
 
     public class MeshNode
     {
-        [Column(TypeName = "geometry (point z)")]
-        public CoordinateZ Pos { get; set; }
+        public long Id { get; set; }
+        [Column(TypeName = "geometry (pointz)")]
+        public Point Pos { get; set; }
         public string BlockId { get; set; }
         public float Certainty { get; set; }
 

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Npgsql;
 
 namespace Pathfinder
 {
@@ -8,6 +9,7 @@ namespace Pathfinder
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
+            NpgsqlConnection.GlobalTypeMapper.UseNetTopologySuite(handleOrdinates: NetTopologySuite.Geometries.Ordinates.XYZ);
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
