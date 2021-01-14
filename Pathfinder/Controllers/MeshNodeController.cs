@@ -44,8 +44,7 @@ namespace Pathfinder.Controllers
             return ItemToDTO(item);
         }
 
-        // PUT: api/MeshNode/5/3/-14
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // PUT: api/MeshNode/1/5/3/-14
         [HttpPut("{worldId}/{x}/{y}/{z}")]
         public async Task<IActionResult> PutMeshNode(long worldId, long x, long y, long z, MeshNodeDTO dto)
         {
@@ -83,7 +82,6 @@ namespace Pathfinder.Controllers
         }
 
         // POST: api/MeshNode
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<MeshNode>> PostMeshNode(MeshNodeDTO dto)
         {
@@ -100,7 +98,7 @@ namespace Pathfinder.Controllers
             }, ItemToDTO(item));
         }
 
-        // DELETE: api/MeshNode/5
+        // DELETE: api/MeshNode/1/5/3/-14
         [HttpDelete("{worldId}/{x}/{y}/{z}")]
         public async Task<IActionResult> DeleteMeshNode(long worldId, long x, long y, long z)
         {
