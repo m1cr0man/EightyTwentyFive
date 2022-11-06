@@ -71,7 +71,7 @@ def main(args: list[str]) -> int:
     if not parsed_args.b_only:
         print(f"Unique files in '{dir_a}'")
         for name in set_a.difference(set_b):
-            print(name)
+            print(dict_a[name])
             if dest:
                 shutil.copy2(str(dict_a[name]), dest)
             if parsed_args.delete_missing:
@@ -81,7 +81,7 @@ def main(args: list[str]) -> int:
     if not parsed_args.a_only:
         print(f"Unique files in '{dir_b}'")
         for name in set_b.difference(set_a):
-            print(name)
+            print(dict_b[name])
             if dest:
                 shutil.copy2(str(dict_b[name]), dest)
             if parsed_args.delete_missing:
