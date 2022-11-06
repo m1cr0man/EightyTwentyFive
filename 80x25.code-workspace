@@ -1,0 +1,30 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"python.defaultInterpreterPath": "${workspaceFolder}/Python/.venv/Scripts/python.exe",
+		"python.analysis.autoImportCompletions": true,
+		"python.analysis.completeFunctionParens": true,
+		"python.analysis.inlayHints.functionReturnTypes": true,
+		"python.analysis.inlayHints.variableTypes": true,
+		"python.analysis.importFormat": "relative",
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "Python: unique_files",
+				"type": "python",
+				"request": "launch",
+				"program": "${workspaceFolder}/Python/unique_files.py",
+				"args": ["X:\\Photos", "Y:\\Pictures", "--a-only"],
+				"console": "integratedTerminal",
+				"justMyCode": false
+			}
+		],
+		"compounds": []
+	}
+}

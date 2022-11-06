@@ -1,2 +1,7 @@
 *.sublime-*
 ComputerCraft/snippets.lua
+.venv/
+Pathfinder/.vscode
+Pathfinder/bin
+Pathfinder/obj
+Pathfinder/appsettings.json
