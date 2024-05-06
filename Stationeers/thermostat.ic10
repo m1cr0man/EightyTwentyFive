@@ -1,0 +1,49 @@
+# Thermostat with hysteresis
+alias sensor d0
+alias target d1
+alias range d2
+alias upcontrol d3
+alias downcontrol d4
+
+alias temp r0
+alias tval r1
+alias upstate r2
+alias downstate r3
+alias lim r4
+# Working value
+alias wv r5
+
+start:
+	yield
+	yield
+	
+	read:
+	l temp sensor Temperature
+	sub temp temp 273
+	l tval target Setting
+	
+	up:
+	l lim target Setting
+	l wv range Setting
+	sub lim lim wv
+	
+	slt wv temp lim
+	or upstate upstate wv
+	slt wv temp tval
+	and upstate upstate wv
+	
+	s upcontrol On upstate
+	
+	down:
+	l lim target Setting
+	l wv range Setting
+	add lim lim wv
+	
+	sgt wv temp lim
+	or downstate downstate wv
+	sgt wv temp tval
+	and downstate downstate wv
+	
+	s downcontrol On downstate
+	
+j start

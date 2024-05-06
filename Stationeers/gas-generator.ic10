@@ -1,0 +1,70 @@
+# Conditions for cooling vent
+# - Room is < 40kpa
+# - Room is > 40 degrees
+# Conditions for release vent
+# - Room is > 70kpa
+alias sensor d0
+alias coolvent d1
+alias releasevent d2
+alias generator d3
+alias battery d4
+
+alias temp r0
+alias press r1
+alias charge r3
+alias coolstate r4
+alias releasestate r5
+alias genstate r6
+
+start:
+	yield
+	yield
+	
+	read:
+	l temp sensor Temperature
+	sub temp temp 273
+	l press sensor Pressure
+	l charge battery Charge
+	
+	chktemp:
+	# Temp range: 15-40 degrees
+	# > 40, vent ON
+	# 15-40 maintain state
+	# < 15, vent OFF
+	sgt r4 temp 40
+	or coolstate coolstate r4
+	sgt r4 temp 15
+	and coolstate coolstate r4
+	
+	minpress:
+	slt r4 press 20
+	# Safety - don't over cool the room
+	sgt r5 temp 6
+	and r4 r4 r5
+	# Preserve coolstate
+	or r4 r4 coolstate
+	
+	cool:
+	s coolvent On r4
+	
+	maxpress:
+	# Pressure range: 30-70 kpa
+	# > 70, vent ON
+	# 30-70 maintain state
+	# < 30, vent OFF
+	sgt r4 press 70
+	or releasestate releasestate r4
+	sgt r4 press 30
+	and releasestate releasestate r4
+	
+	s releasevent On releasestate
+	
+	chkcharge:
+	slt r4 charge 25
+	or genstate genstate r4
+	slt r4 charge 95
+	and genstate genstate r4
+	
+	s generator On genstate
+	
+j start
