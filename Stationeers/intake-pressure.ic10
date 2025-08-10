@@ -1,0 +1,23 @@
+alias analyzer d0
+
+alias pressure r0
+alias instate r1
+
+alias wv1 r14
+alias wv2 r15
+
+start:
+	sbn HASH("StructureActiveVent") HASH("Intake Pressure Vent") PressureInternal 10000
+	
+	l pressure analyzer Pressure
+	# 10MPA - 1MPA
+	sgt wv1 pressure 10000
+	or instate instate wv1
+	sgt wv1 pressure 1000
+	and instate instate wv1
+	
+	sbn HASH("StructureActiveVent") HASH("Intake Pressure Vent") On instate
+	
+	yield
+	yield
+j start
